@@ -152,7 +152,6 @@ function elBase:MainMenu()
 
             self:PerformLayoutInternal()
         end
-        baseMainS:GetCanvas():DockPadding(0, 0, baseMainS:GetVBar().Enabled and 9 * swid or 0, 0)
 
         local baseBottom = vgui.Create("DPanel", frame)
         baseBottom:SetSize(800 * swid, 70 * shei)
