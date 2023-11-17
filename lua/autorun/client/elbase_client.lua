@@ -125,9 +125,7 @@ function elBase:MainMenu()
     end
 
     Button("Credits", function()
-        base:AlphaTo(0, 0.15, 0, function()
-            base:SetVisible(false)
-        end)
+        base:AlphaTo(0, 0.15)
 
         local baseMain = vgui.Create("DPanel", frame)
         baseMain:SetSize(800 * swid, 800 * shei)
@@ -153,6 +151,23 @@ function elBase:MainMenu()
             self:PerformLayoutInternal()
         end
 
+        local baseMainSVBar = baseMainS:GetVBar()
+        baseMainSVBar:SetHideButtons(true)
+        baseMainSVBar.Paint = function(self, w, h)
+            surface.SetDrawColor(0, 0, 0, 180)
+            surface.DrawRect(0, 0, w, h)
+    
+            surface.SetDrawColor(255, 255, 255, 20)
+            surface.DrawOutlinedRect(0, 0, w, h)
+        end
+        baseMainSVBar.btnGrip.Paint = function(self, w, h)
+            surface.SetDrawColor(0, 0, 0, 180)
+            surface.DrawRect(0, 0, w, h)
+    
+            surface.SetDrawColor(255, 255, 255, 20)
+            surface.DrawOutlinedRect(0, 0, w, h)
+        end
+
         local baseBottom = vgui.Create("DPanel", frame)
         baseBottom:SetSize(800 * swid, 70 * shei)
         baseBottom:SetAlpha(0)
@@ -173,13 +188,12 @@ function elBase:MainMenu()
             elBase:ButtonClick()
 
             baseMain:AlphaTo(0, 0.15, 0, function()
-                baseMain:SetVisible(false)
+                baseMain:Remove()
             end)
             baseBottom:AlphaTo(0, 0.15, 0, function()
-                baseBottom:SetVisible(false)
+                baseBottom:Remove()
             end)
 
-            base:SetVisible(true)
             base:AlphaTo(255, 0.15, 0.15)
         end
         back.Paint = function(self, w, h)
