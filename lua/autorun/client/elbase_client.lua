@@ -9,8 +9,9 @@ end
 function elBase:CreateFonts()
     local ssh = elBase:ScreenScale()
 
-    surface.CreateFont("elFontLarge", {font = "Arial", size = 60 * ssh, antialias = true})
-    surface.CreateFont("elFontMenuTitle", {font = "Arial", size = 96 * ssh, antialias = true})
+    surface.CreateFont("elFontNameLabel", {font = "Consolas", size = 22 * ssh, antialias = true})
+    surface.CreateFont("elFontLarge", {font = "Consolas", size = 60 * ssh, antialias = true})
+    surface.CreateFont("elFontMenuTitle", {font = "Consolas", size = 96 * ssh, antialias = true})
 end
 
 elBase:CreateFonts()
@@ -238,14 +239,43 @@ function elBase:MainMenu()
                 surface.DrawOutlinedRect(0, 0, w, h)
             end
 
-            local area = vgui.Create("DPanel", area)
-            area:SetSize(64 * swid, 64 * shei)
-            area:Dock(LEFT)
-            area:DockMargin(0, 0, 0, 8 * shei)
-            area.Paint = function(self, w, h)
+            local areaPFP = vgui.Create("DPanel", area)
+            areaPFP:SetSize(84 * swid, 84 * shei)
+            areaPFP:Dock(LEFT)
+            areaPFP:DockMargin(8 * shei, 8 * shei, 0, 8 * shei)
+            areaPFP.Paint = function(self, w, h)
                 surface.SetDrawColor(255, 255, 255, 20)
                 surface.DrawOutlinedRect(0, 0, w, h)
             end
+
+            local avatar = vgui.Create("AvatarImage", areaPFP)
+            avatar:Dock(FILL)
+            avatar:DockMargin(1, 1, 1, 1)
+            avatar:InvalidateParent()
+            avatar:SetSteamID(tab[1], avatar:GetSize())
+
+            local name = vgui.Create("DPanel", area)
+            name:SetTall(28 * shei)
+            name:Dock(TOP)
+            name:DockMargin(8 * swid, 8 * shei, 8 * swid, 0)
+            name:InvalidateParent()
+            name.Paint = function(self, w, h)
+                surface.SetDrawColor(0, 0, 0, 180)
+                surface.DrawRect(0, 0, w, h)
+
+                surface.SetDrawColor(255, 255, 255, 20)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local nameLabel = vgui.Create("DLabel", name)
+            nameLabel:SetText("Requesting player info...")
+            steamworks.RequestPlayerInfo(tab[1], function(nick)
+                nameLabel:SetText(nick)
+            end)
+            nameLabel:SetFont("elFontNameLabel")
+            nameLabel:Dock(FILL)
+            nameLabel:DockMargin(8 * swid, 0, 8 * swid, 0)
+            nameLabel:SetContentAlignment(4)
         end
     end)
 
