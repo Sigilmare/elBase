@@ -8,8 +8,14 @@ end
 
 function elBase:CreateFonts()
     local ssh = elBase:ScreenScale()
+    local ssw = elBase:ScreenScale(true)
 
     surface.CreateFont("elFontNameLabel", {font = "Consolas", size = 22 * ssh, antialias = true})
+    surface.CreateFont("elFontDescLabel", {font = "Consolas", size = 20 * ssh, antialias = true})
+
+    -- Use width scaling because it's for the "View profile?" text in credits
+    surface.CreateFont("elFontProfilePrompt", {font = "Arial", size = 16 * ssw, antialias = true})
+
     surface.CreateFont("elFontLarge", {font = "Consolas", size = 60 * ssh, antialias = true})
     surface.CreateFont("elFontMenuTitle", {font = "Consolas", size = 96 * ssh, antialias = true})
 end
@@ -19,15 +25,11 @@ chat.AddText(Color(255, 165, 0), "[elBase] Fonts refreshed/updated")
 
 local function ButtonPaint(self, w, h)
 	if self.Hovered then
-        surface.SetDrawColor(40, 40, 40)
-        surface.DrawRect(0, 0, w, h)
-
         surface.SetDrawColor(255, 255, 255, 20)
-        surface.DrawOutlinedRect(0, 0, w, h)
-		return
+        surface.DrawRect(0, 0, w, h)
 	end
 
-	surface.SetDrawColor(20, 20, 20)
+	surface.SetDrawColor(0, 0, 0, 180)
     surface.DrawRect(0, 0, w, h)
     
     surface.SetDrawColor(255, 255, 255, 20)
@@ -76,6 +78,7 @@ function elBase:MainMenu()
     local frame = vgui.Create("DFrame")
     frame:SetSize(ScrW(), ScrH())
     frame:SetDraggable(false)
+    frame:ShowCloseButton(false)
     frame:SetTitle("")
     frame:SetAlpha(0)
     frame:AlphaTo(255, 0.15)
@@ -254,6 +257,27 @@ function elBase:MainMenu()
             avatar:InvalidateParent()
             avatar:SetSteamID(tab[1], avatar:GetSize())
 
+            local profileURL = vgui.Create("DButton", avatar)
+            profileURL:SetText("")
+            profileURL:Dock(FILL)
+            profileURL.OnMousePressed = function(self, key)
+                if key != MOUSE_LEFT then return end
+        
+                elBase:ButtonClick()
+                gui.OpenURL("https://steamcommunity.com/profiles/"..tab[1])
+            end
+            profileURL.Paint = function(self, w, h)
+                if self.Hovered then
+                    surface.SetDrawColor(255, 255, 255, 20)
+                    surface.DrawRect(0, 0, w, h)
+                    draw.SimpleTextOutlined("View profile?", "elFontProfilePrompt", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+                    return
+                end
+            end
+            profileURL.OnCursorEntered = function()
+                surface.PlaySound("garrysmod/ui_return.wav")
+            end
+
             local name = vgui.Create("DPanel", area)
             name:SetTall(28 * shei)
             name:Dock(TOP)
@@ -276,6 +300,26 @@ function elBase:MainMenu()
             nameLabel:Dock(FILL)
             nameLabel:DockMargin(8 * swid, 0, 8 * swid, 0)
             nameLabel:SetContentAlignment(4)
+
+            local desc = vgui.Create("DPanel", area)
+            desc:Dock(FILL)
+            desc:DockMargin(8 * swid, 8 * shei, 8 * swid, 8 * shei)
+            desc:InvalidateParent()
+            desc.Paint = function(self, w, h)
+                surface.SetDrawColor(0, 0, 0, 180)
+                surface.DrawRect(0, 0, w, h)
+
+                surface.SetDrawColor(255, 255, 255, 20)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local descLabel = vgui.Create("DLabel", desc)
+            descLabel:SetText(tab[2])
+            descLabel:SetFont("elFontDescLabel")
+            descLabel:Dock(FILL)
+            descLabel:DockMargin(8 * swid, 4 * shei, 8 * swid, 4 * shei)
+            descLabel:SetContentAlignment(7)
+            descLabel:SetWrap(true)
         end
     end)
 
