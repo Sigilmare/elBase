@@ -237,6 +237,15 @@ function elBase:MainMenu()
                 surface.SetDrawColor(255, 255, 255, 20)
                 surface.DrawOutlinedRect(0, 0, w, h)
             end
+
+            local area = vgui.Create("DPanel", area)
+            area:SetSize(64 * swid, 64 * shei)
+            area:Dock(LEFT)
+            area:DockMargin(0, 0, 0, 8 * shei)
+            area.Paint = function(self, w, h)
+                surface.SetDrawColor(255, 255, 255, 20)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
         end
     end)
 
