@@ -7,17 +7,15 @@ function elBase:ScreenScale(val)
 end
 
 function elBase:CreateFonts()
-    local ssh = elBase:ScreenScale()
     local ssw = elBase:ScreenScale(true)
+    
+    surface.CreateFont("elFontNameLabel", {font = "Consolas", size = 22 * ssw, antialias = true})
+    surface.CreateFont("elFontDescLabel", {font = "Consolas", size = 20 * ssw, antialias = true})
 
-    surface.CreateFont("elFontNameLabel", {font = "Consolas", size = 22 * ssh, antialias = true})
-    surface.CreateFont("elFontDescLabel", {font = "Consolas", size = 20 * ssh, antialias = true})
-
-    -- Use width scaling because it's for the "View profile?" text in credits
     surface.CreateFont("elFontProfilePrompt", {font = "Arial", size = 16 * ssw, antialias = true})
 
-    surface.CreateFont("elFontLarge", {font = "Consolas", size = 60 * ssh, antialias = true})
-    surface.CreateFont("elFontMenuTitle", {font = "Consolas", size = 96 * ssh, antialias = true})
+    surface.CreateFont("elFontLarge", {font = "Consolas", size = 60 * ssw, antialias = true})
+    surface.CreateFont("elFontMenuTitle", {font = "Consolas", size = 96 * ssw, antialias = true})
 end
 
 elBase:CreateFonts()
