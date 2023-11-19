@@ -126,6 +126,201 @@ function elBase:MainMenu()
         end
     end
 
+    Button("Blacklists", function()
+        base:AlphaTo(0, 0.15)
+
+        local baseMain = vgui.Create("DPanel", frame)
+        baseMain:SetSize(800 * swid, 800 * shei)
+        baseMain:SetAlpha(0)
+        baseMain:AlphaTo(255, 0.15, 0.15)
+        baseMain:AlignTop(64 * shei)
+        baseMain:CenterHorizontal()
+        baseMain.Paint = function(self, w, h)
+            surface.SetDrawColor(255, 255, 255, 20)
+            surface.DrawOutlinedRect(0, 0, w, h)
+        end
+
+        local baseMainS = vgui.Create("DScrollPanel", baseMain)
+        baseMainS:Dock(FILL)
+        baseMainS:DockMargin(9 * swid, 9 * shei, 9 * swid, 9 * shei)
+        baseMainS.Debounce = false
+        baseMainS.PerformLayout = function(self)
+            if self:GetVBar().Enabled and not self.Debounce then
+                self:GetCanvas():DockPadding(0, 0, 9 * swid, 0)
+                self.Debounce = true
+            end
+
+            self:PerformLayoutInternal()
+        end
+
+        local baseMainSVBar = baseMainS:GetVBar()
+        baseMainSVBar:SetHideButtons(true)
+        baseMainSVBar.Paint = function(self, w, h)
+            surface.SetDrawColor(0, 0, 0, 180)
+            surface.DrawRect(0, 0, w, h)
+    
+            surface.SetDrawColor(255, 255, 255, 20)
+            surface.DrawOutlinedRect(0, 0, w, h)
+        end
+        baseMainSVBar.btnGrip.Paint = function(self, w, h)
+            surface.SetDrawColor(35, 0, 0, 180)
+            surface.DrawRect(0, 0, w, h)
+    
+            surface.SetDrawColor(255, 255, 255, 20)
+            surface.DrawOutlinedRect(0, 0, w, h)
+        end
+
+        local baseBottom = vgui.Create("DPanel", frame)
+        baseBottom:SetSize(800 * swid, 70 * shei)
+        baseBottom:SetAlpha(0)
+        baseBottom:AlphaTo(255, 0.15, 0.15)
+        baseBottom:AlignBottom(70 * shei)
+        baseBottom:CenterHorizontal()
+        baseBottom.Paint = nil
+
+        local back = vgui.Create("DButton", baseBottom)
+        back:SetFont("elFontLarge")
+        back:SetText("Back")
+        back:SetTextColor(color_white)
+        back:SetSize(350 * swid, 70 * shei)
+        back:Dock(LEFT)
+        back.OnMousePressed = function(self, key)
+            if key != MOUSE_LEFT then return end
+    
+            elBase:ButtonClick()
+
+            baseMain:AlphaTo(0, 0.15, 0, function()
+                baseMain:Remove()
+            end)
+            baseBottom:AlphaTo(0, 0.15, 0, function()
+                baseBottom:Remove()
+            end)
+
+            base:AlphaTo(255, 0.15, 0.15)
+        end
+        back.Paint = function(self, w, h)
+            ButtonPaint(self, w, h)
+        end
+        back.OnCursorEntered = function()
+            surface.PlaySound("garrysmod/ui_return.wav")
+        end
+
+        local close = vgui.Create("DButton", baseBottom)
+        close:SetFont("elFontLarge")
+        close:SetText("Close")
+        close:SetTextColor(color_white)
+        close:SetSize(350 * swid, 70 * shei)
+        close:Dock(RIGHT)
+        close.OnMousePressed = function(self, key)
+            if key != MOUSE_LEFT then return end
+    
+            elBase:ButtonClick()
+            
+            frame:AlphaTo(0, 0.15, 0, function()
+                frame:Close()
+            end)
+        end
+        close.Paint = function(self, w, h)
+            ButtonPaint(self, w, h)
+        end
+        close.OnCursorEntered = function()
+            surface.PlaySound("garrysmod/ui_return.wav")
+        end
+
+        for index, tab in ipairs(elBase.Blacklist) do
+            local area = vgui.Create("DPanel", baseMainS)
+            area:SetSize(800 * swid, 100 * shei)
+            area:Dock(TOP)
+            area:DockMargin(0, 0, 0, 8 * shei)
+            area.Paint = function(self, w, h)
+                surface.SetDrawColor(0, 0, 0, 180)
+                surface.DrawRect(0, 0, w, h)
+
+                surface.SetDrawColor(255, 255, 255, 20)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local areaPFP = vgui.Create("DPanel", area)
+            areaPFP:SetSize(84 * swid, 84 * shei)
+            areaPFP:Dock(LEFT)
+            areaPFP:DockMargin(8 * shei, 8 * shei, 0, 8 * shei)
+            areaPFP.Paint = function(self, w, h)
+                surface.SetDrawColor(255, 255, 255, 20)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local avatar = vgui.Create("AvatarImage", areaPFP)
+            avatar:Dock(FILL)
+            avatar:DockMargin(1, 1, 1, 1)
+            avatar:InvalidateParent()
+            avatar:SetSteamID(tab[1], avatar:GetSize())
+
+            local profileURL = vgui.Create("DButton", avatar)
+            profileURL:SetText("")
+            profileURL:Dock(FILL)
+            profileURL.OnMousePressed = function(self, key)
+                if key != MOUSE_LEFT then return end
+        
+                elBase:ButtonClick()
+                gui.OpenURL("https://steamcommunity.com/profiles/"..tab[1])
+            end
+            profileURL.Paint = function(self, w, h)
+                if self.Hovered then
+                    surface.SetDrawColor(255, 255, 255, 20)
+                    surface.DrawRect(0, 0, w, h)
+                    draw.SimpleTextOutlined("View profile?", "elFontProfilePrompt", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+                    return
+                end
+            end
+            profileURL.OnCursorEntered = function()
+                surface.PlaySound("garrysmod/ui_return.wav")
+            end
+
+            local name = vgui.Create("DPanel", area)
+            name:SetTall(28 * shei)
+            name:Dock(TOP)
+            name:DockMargin(8 * swid, 8 * shei, 8 * swid, 0)
+            name:InvalidateParent()
+            name.Paint = function(self, w, h)
+                surface.SetDrawColor(35, 0, 0, 180)
+                surface.DrawRect(0, 0, w, h)
+
+                surface.SetDrawColor(255, 255, 255, 20)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local nameLabel = vgui.Create("DLabel", name)
+            nameLabel:SetText("Requesting player info...")
+            steamworks.RequestPlayerInfo(tab[1], function(nick)
+                nameLabel:SetText(nick)
+            end)
+            nameLabel:SetFont("elFontNameLabel")
+            nameLabel:Dock(FILL)
+            nameLabel:DockMargin(8 * swid, 0, 8 * swid, 0)
+            nameLabel:SetContentAlignment(4)
+
+            local desc = vgui.Create("DPanel", area)
+            desc:Dock(FILL)
+            desc:DockMargin(8 * swid, 8 * shei, 8 * swid, 8 * shei)
+            desc:InvalidateParent()
+            desc.Paint = function(self, w, h)
+                surface.SetDrawColor(35, 0, 0, 180)
+                surface.DrawRect(0, 0, w, h)
+
+                surface.SetDrawColor(255, 255, 255, 20)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local descLabel = vgui.Create("DLabel", desc)
+            descLabel:SetText(tab[2])
+            descLabel:SetFont("elFontDescLabel")
+            descLabel:Dock(FILL)
+            descLabel:DockMargin(8 * swid, 4 * shei, 8 * swid, 4 * shei)
+            descLabel:SetContentAlignment(7)
+            descLabel:SetWrap(true)
+        end
+    end)
+
     Button("Credits", function()
         base:AlphaTo(0, 0.15)
 
