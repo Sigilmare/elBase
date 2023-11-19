@@ -25,6 +25,7 @@ elBase.Blacklist = {
     {"76561198440949403", REASON_AWZLC},
     {"76561198135248764", REASON_AWZLC},
     {"76561198852541273", REASON_AWZLC},
+    {"76561198171603670", "Test"},
     {"76561198045694966", REASON_AWZLC},
     {"76561198272180359", REASON_AWZLC},
     {"76561198010367820", REASON_AWZLC},
@@ -32,3 +33,7 @@ elBase.Blacklist = {
     {"76561198097536249", "No."},
     {"76561199163486631", "No."},
 }
+elBase.BlacklistIDs = {}
+for index, tab in ipairs(elBase.Blacklist) do
+    table.insert(elBase.BlacklistIDs, tab[1])
+end
